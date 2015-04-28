@@ -26,7 +26,7 @@ nonZeroIndices = find(groundTruth);
 zeroIndices = find(groundTruth <= 0);
 
 % create 9 different window shapes
-N=14;
+N=16;
 mid = floor(N/2);
 
 shapes = zeros( N, N, 9);
@@ -216,4 +216,4 @@ figure, imshow(disparityPrediction, []), colormap(jet), colorbar;
 % % figure, surf(bestDisparity, 'EdgeColor','none'), title('Predicted Disparity');
 % % axis ij;
 
-
+RMS
