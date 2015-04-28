@@ -4,13 +4,15 @@ function [ dispIndices ] = initialDisparity( view1, view2 )
 %   disparity for each pixel in an image by varying possible disparities
 %   and 9 window shapes and choosing the combination that minimizes SSD.
 
-height = size(view1,1);
-width = size(view1,2);
+
 
 maxDisparity = 75;
 % pad images
 padView1 = padarray(view1, [0 maxDisparity], 'post');
 padView2 = padarray(view2, [0 maxDisparity], 'post');
+
+height = size(padView1,1);
+width = size(padView1,2);
 
 N=16;
 mid = floor(N/2);
@@ -33,7 +35,7 @@ shapes(:, :, 8) = flipdim(triu(one), 3)/numel(find(flipdim(triu(one), 3)));
 shapes(:, :, 9) = flipdim(tril(one), 3)/numel(find(flipdim(tril(one), 3)));
 
 % preallocating 4D matrix of SSD results
-result = zeros(height, width, maxDisparity, size(shapes, 3));
+result = zeros(height, width, maxDisparity, size(shapes, 3)); %% <- HARDCODE
 
 % for each of the 9 shapes
 for j = 1:size(shapes, 3)
