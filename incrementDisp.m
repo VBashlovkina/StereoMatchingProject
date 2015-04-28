@@ -1,7 +1,9 @@
-function [ output_args ] = incrementDisp( input_args )
-%UNTITLED3 Summary of this function goes here
-%   Detailed explanation goes here
+function [ incr ] = incrementDisp( view1, view2, d, x, y, window )
+% INCREMENTDISP produces a value by which the current measure of disparity
+% at given pixel (D(Y,X)) should be incremented to minimize uncertainty for
+% the given WINDOW.
 
-
+%% STUB
+incr = 0;
 end
 
