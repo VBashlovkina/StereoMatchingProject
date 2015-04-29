@@ -44,8 +44,8 @@ one = ones(N);
 zero = zeros(N);
 shapes(:, :, 6) = triu(one) /  numel(find(triu(one))); %magic kernel 2
 shapes(:, :, 7) = tril(one) / numel(find(tril(one))) ;
-shapes(:, :, 8) = flipdim(triu(one), 3)/numel(find(flipdim(triu(one), 3)));
-shapes(:, :, 9) = flipdim(tril(one), 3)/numel(find(flipdim(tril(one), 3))); 
+shapes(:, :, 8) = flipdim(triu(one), 2)/numel(find(flipdim(triu(one), 2)));
+shapes(:, :, 9) = flipdim(tril(one), 2)/numel(find(flipdim(tril(one), 2))); 
 
 %% V for odd kernels V
 % % 4 vertically and horozontally divided kernels, normalized
