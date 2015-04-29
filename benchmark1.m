@@ -149,3 +149,11 @@ figure, surf(fullDispDiff, 'EdgeColor','none'), title('Depth Error Produced with
 axis ij;
 view(48,52);
 % RMS = 8.7401 after blurrig, 9.4797 before
+
+
+error3D9 = imread('3Derror9shapes.jpg');
+error3D1 = imread('3Derror1shape.jpg');
+figure;
+subplot(1,2,1), imshow(error3D1);
+subplot(1,2,2), imshow(error3D9);
+truesize;
