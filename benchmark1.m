@@ -131,9 +131,9 @@ RMS
 % noise reduction: gaussian convolution
 % gauss = gkern(1);
 % reducedNoise1 = conv2(gauss, gauss', disparityPrediction, 'same');
-disparityPrediction(zeroIndices) = 0;
-figure, imshow(disparityPrediction, []), title('Disparity Predicted with 9 Window Shapes');
-colormap jet;
+% disparityPrediction(zeroIndices) = 0;
+% figure, imshow(disparityPrediction, []), title('Disparity Predicted with 9 Window Shapes');
+% colormap jet;
 
 % calculate RMS error between prediction and real disparity
 disparityDiff = bsxfun(@minus, groundTruth(nonZeroIndices), disparityPrediction(nonZeroIndices));

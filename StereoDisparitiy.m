@@ -38,8 +38,8 @@ view2 = im2double(imread('/home/weinman/courses/CSC262/images/view5.png'));
 view1 = rgb2gray(view1);
 view2 = rgb2gray(view2);
 
-figure, imshow(view1), title('View 1');
-figure, imshow(view2), title('View 2');
+%figure, imshow(view1), title('View 1');
+%figure, imshow(view2), title('View 2');
 
 % load disparity
 groundTruth = imread('/home/weinman/courses/CSC262/images/truedisp.png');
@@ -161,7 +161,7 @@ RMS = sqrt(meanSquared);
 %  xlabel('Window Size'), ylabel('RMS');
 
 % doesnt need new figure
-openfig('RMS_vs_WinSize.fig');
+%openfig('RMS_vs_WinSize.fig');
 
 %% 
 % We see from our plot that the RMS varies with window size. In particular
@@ -203,7 +203,7 @@ figure, imshow(groundTruth, []), title('True Disparity 2d'), colormap jet;
 disparityPrediction2 = disparityPrediction;
 disparityPrediction2(zeroIndices) = 0;
 % display 2d versions
-figure, imshow(disparityPrediction2, []), title('Disparity Prediction with Single Window');
+figure, imshow(disparityPrediction2, []), title('Disparity Prediction with Single 7x7 Window');
 colormap jet;
 RMS % 10.3655 
 
