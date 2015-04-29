@@ -104,8 +104,6 @@ end
 [minDisp, dispIndices] = min(minShape, [], 3);
 BestShapeIndices = ShapeIndices(dispIndices);
 
-
-
 % calculate RMS error between prediction and real disparity
 disparityDiff = bsxfun(@minus, groundTruth(nonZeroIndices), dispIndices(nonZeroIndices));
 
@@ -115,105 +113,39 @@ meanSquared = mean(squaredDDif(:));
 RMS = sqrt(meanSquared);
 
 
-
-
-% shapeNames = {'Sq', 'LR' , 'RR' ,'UR','LoR', 'ULD','LRD','URD','LLD'};
-% figure, bar(Results), title('RMS vs SSD Window Shapes');
-%  xlabel('Window Shape'), ylabel('RMS');
-%  set(gca, 'XTick', 1:length(shapes), 'XTickLabel', shapeNames);
-
 % display 2d versions
 %figure, imshow(groundTruth, []), title('True Disparity 2d'), colormap jet;
 
-% % set predicted disparity to zero in appropriate places
+% set predicted disparity to zero in appropriate places
 disparityPrediction = dispIndices;
 disparityPrediction(zeroIndices) = 0;
 
-figure, imshow(BestShapeIndices, []), colorbar;
-
+figure, imshow(BestShapeIndices, []), colorbar, title('Window Shapes Used');
 figure, imshow(disparityPrediction, []), colormap(jet), colorbar;
+title('Disparity Prediction with 9 Window Shapes');
+
 % display 2d versions
 %figure, imshow(disparityPrediction2, []), title('Predicted Disparity 2d');
 %colormap jet;
-% 
-% 
-% % noise reduction 1: gaussian convolution
-% gauss = gkern(5);
-% reducedNoise1 = conv2(gauss, gauss', disparityPrediction, 'same');
-% reducedNoise1(zeroIndices) = 0;
-% figure, imshow(reducedNoise1, []), title('Reduced Noise Disparity- Gaussian Filter');
-% colormap jet;
-% 
-% % calculate RMS error between prediction and real disparity
-% 
-% disparityDiff = bsxfun(@minus, groundTruth(nonZeroIndices), reducedNoise1(nonZeroIndices));
-% squaredDDif = disparityDiff.^2;
-% meanSquared = mean(squaredDDif(:));
-% RMS = sqrt(meanSquared);
-% 
-% 
-% % Our second noise reduction technique is to blur with a median filter. In
-% % this case, our RMS is 9.90. We see that this is not as effective as the
-% % Gaussian filter, thus we choose to enhance our first noise reduction
-% % approach.
-% 
-% % noise reduction 2, median
-% disparityPrediction3 = disparityPrediction;
-% reducedNoise2 = medfilt2(disparityPrediction3);
-% 
-% figure, imshow(reducedNoise2, []), title('Reduced Noise Disparity- Median Filter');
-% colormap jet;
-% 
-% disparityDiff = bsxfun(@minus, groundTruth(nonZeroIndices), reducedNoise2(nonZeroIndices));
-% squaredDDif = disparityDiff.^2;
-% meanSquared = mean(squaredDDif(:));
-% RMS = sqrt(meanSquared);
-% 
-% %%
-% % To determine the best approach for blurring with a Gaussian, we now
-% % attempt to determine the relationship between the size of our Gaussian
-% % filter and the RMS error between the disparities. We vary the kernel size
-% % from 1 to 51, considering only odd kernels, and plot the resulting
-% % relationship below.
-% 
-% % vary parameters of reduction 1
-% kernelSize = [1:2:51];
-% RMSvsKernel = zeros(1, length(kernelSize));
-% % for k=1:length(kernelSize)
-% %    
-% %     gauss = gkern(kernelSize(k));
-% %     reducedNoise1 = conv2(gauss, gauss', disparityPrediction, 'same');
-% %     reducedNoise1(zeroIndices) = 0;
-% %     
-% %     disparityDiff = bsxfun(@minus, groundTruth(nonZeroIndices), reducedNoise1(nonZeroIndices));
-% %     squaredDDif = disparityDiff.^2;
-% %     meanSquared = mean(squaredDDif(:));
-% %     RMS = sqrt(meanSquared);
-% %     
-% %     RMSvsKernel(k) = RMS;
-% %     
-% %     % save best image
-% %     if(kernelSize(k) == 11)
-% %         bestDisparity = reducedNoise1;
-% %     end
-% %     
-% % end
-% %     
-% % figure, plot(kernelSize, RMSvsKernel), title('RMS vs Kernel Size');
-% % xlabel('Blurring Kernel Size'), ylabel('RMS');
-% 
-% openfig('RMS_vs_KernelSize.fig');
-% 
-% %%
-% % We see that in this graph we have a local minimum at 11. Using this as
-% % the kernel size for the Gaussian filter, we display the best version of
-% % our disparity image below.
-% 
-% figure,imshow(bestDisparity, []), colormap jet;
-% title('Best Reduced Noise Disparity Prediction');
-% 
-% % 3d predicted disparity
-% % figure, surf(bestDisparity, 'EdgeColor','none'), title('Predicted Disparity');
-% % axis ij;
-
 RMS
+% noise reduction: gaussian convolution
+% gauss = gkern(1);
+% reducedNoise1 = conv2(gauss, gauss', disparityPrediction, 'same');
+disparityPrediction(zeroIndices) = 0;
+figure, imshow(disparityPrediction, []), title('Disparity Predicted with 9 Window Shapes');
+colormap jet;
+
+% calculate RMS error between prediction and real disparity
+disparityDiff = bsxfun(@minus, groundTruth(nonZeroIndices), disparityPrediction(nonZeroIndices));
+squaredDDif = disparityDiff.^2;
+meanSquared = mean(squaredDDif(:));
+RMS = sqrt(meanSquared);
+fullDispDiff = groundTruth - disparityPrediction;
+fullDispDiff(zeroIndices) = 0;
+figure, imshow(fullDispDiff), title('Disparity Error Produced with 9 Window Shapes');
+
+% 3d predicted disparity
+figure, surf(fullDispDiff, 'EdgeColor','none'), title('Depth Error Produced with 9 Window Shapes');
+axis ij;
+view(48,52);
+% RMS = 8.7401 after blurrig, 9.4797 before
