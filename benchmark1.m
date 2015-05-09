@@ -31,7 +31,8 @@ mid = floor(N/2);
 
 shapes = zeros( N, N, 9);
 shapes(:, :, 1) = 1/(N^2);
-
+shapes(:,:,1) = 0;
+shapes(3:14, 3:14, 1) = 1/(12^2);
 % 4 vertically and horozontally divided kernels, normalized
 % left and right kernels
 shapes( :, 1:mid, 3) = ones(N, mid) / (N*mid); % magic kernel
@@ -120,7 +121,7 @@ RMS = sqrt(meanSquared);
 disparityPrediction = dispIndices;
 disparityPrediction(zeroIndices) = 0;
 
-figure, imshow(BestShapeIndices, []), colorbar, title('Window Shapes Used');
+figure, imshow(BestShapeIndices, []), colormap(jet),colorbar, title('Window Shapes Used');
 figure, imshow(disparityPrediction, []), colormap(jet), colorbar;
 title('Disparity Prediction with 9 Window Shapes');
 
@@ -148,7 +149,7 @@ figure, imshow(fullDispDiff), title('Disparity Error Produced with 9 Window Shap
 figure, surf(fullDispDiff, 'EdgeColor','none'), title('Depth Error Produced with 9 Window Shapes');
 axis ij;
 view(48,52);
-% RMS = 8.7401 after blurrig, 9.4797 before
+% RMS = 8.7401 after blurrig, 9.3472 before
 
 
 error3D9 = imread('3Derror9shapes.jpg');

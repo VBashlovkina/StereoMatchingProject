@@ -8,8 +8,8 @@ function [ newWindow, wCenterX, wCenterY ] = expandWindow( window, direction, wC
 %           3 - add row below
 %           4 - add column on the left
 
-width = size(window,1);
-height = size(window,2);
+width = size(window,2);
+height = size(window,1);
 
 % update window shape
 if mod(direction,2) == 1
