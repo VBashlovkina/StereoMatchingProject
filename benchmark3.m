@@ -1,3 +1,4 @@
+% import some classes
 import StereoImage;
 import Window;
 % load two images
@@ -10,7 +11,7 @@ height = size(view1,1);
 width = size(view1,2);
 
 stereoImg = StereoImage(view1, view2);
-% load disparity
+% load disparity data
 groundTruth = imread('/home/weinman/courses/CSC262/images/truedisp.png');
 
 % scale ground truth (after casting to double to eliminate chance of zero
@@ -39,7 +40,26 @@ for x = 1:width
                     %fprintf('pixel %d %d, direction %d\n', x,y,k);
                     if flags(k)
                         newWindow = Window.expandWindow(window, k);
-                        newUncert = uncertainty(stereoImg, x, y, newWindow);
+                     
+			% I think that we want to check all directions, 
+			% and choose min uncertainty of these
+			% possible code:
+			%
+			% newUncert=uncertainty(stereoImg, x, y, newWindow);
+			%
+			%
+			% if newUncert < curUncert
+                        %    uncerts(k) = newUncert
+			% else
+			% 	flags(k) = 0; //prohibit direction
+			% % stop looping through each direction, choose best
+			% direction = find(max(uncerts));
+			% set new window
+			% window = Window.expandWindow(window, direction);
+			% currentUncert = uncerts(k)
+			% gotBetter = 1
+			
+			newUncert = uncertainty(stereoImg, x, y, newWindow);
                         if newUncert < curUncert
                             window = newWindow;
                             curUncert = newUncert;

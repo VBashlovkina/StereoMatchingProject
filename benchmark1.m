@@ -1,4 +1,4 @@
-% load two images
+% load two stereo images
 view1 = im2double(imread('/home/weinman/courses/CSC262/images/view1.png')); 
 view2 = im2double(imread('/home/weinman/courses/CSC262/images/view5.png'));
 % convert to grayscale
@@ -31,7 +31,7 @@ mid = floor(N/2);
 
 shapes = zeros( N, N, 9);
 shapes(:, :, 1) = 1/(N^2);
-shapes(:,:,1) = 0;
+shapes(:,:,1) = 0; % should this be here?
 shapes(3:14, 3:14, 1) = 1/(12^2);
 % 4 vertically and horozontally divided kernels, normalized
 % left and right kernels
@@ -85,20 +85,7 @@ for i=maxDisparity:-1:1
     result(:,:,i, j) = conv2(squaredDiffs, kernel, 'same');     
 end
 
-%  % compute the min along 3rd dim
-% [mins, minIndices] = min(result(:, 1:end-maxDisparity, :), [], 3);
-% 
-% % calculate RMS error between prediction and real disparity
-% disparityDiff = bsxfun(@minus, groundTruth(nonZeroIndices), minIndices(nonZeroIndices));
-% 
-% % rms2 = rms(disparityDiff2); % function rms yields same value
-% squaredDDif = disparityDiff.^2;
-% meanSquared = mean(squaredDDif(:));
-% RMS = sqrt(meanSquared);
-% 
-% % store RMS in result array
-% Results(j) = RMS;
-end 
+end
 
 [minShape, ShapeIndices] = min(result(:, 1:end-maxDisparity, :, :), [], 4);
 
@@ -109,9 +96,9 @@ BestShapeIndices = ShapeIndices(dispIndices);
 disparityDiff = bsxfun(@minus, groundTruth(nonZeroIndices), dispIndices(nonZeroIndices));
 
 % rms2 = rms(disparityDiff2); % function rms yields same value
-squaredDDif = disparityDiff.^2;
-meanSquared = mean(squaredDDif(:));
-RMS = sqrt(meanSquared);
+%squaredDDif = disparityDiff.^2;
+%meanSquared = mean(squaredDDif(:));
+%RMS = sqrt(meanSquared);
 
 
 % display 2d versions

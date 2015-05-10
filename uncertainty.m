@@ -1,31 +1,35 @@
 function [ uncert ] = uncertainty( stereoImg, x, y, window)
 %UNCERTAINTY estimates the uncertainty of the disparity estimate for a
 % given pixel  
+% shouldn't it calculate uncertainty over whole window?
 
 width = window.width;
 height = window.height;
 N = width * height;
-% compute disparity and intensity fluctuations
 
 dispFluct = 0;
 intensFluct = 0;
 
+% question:  do we need to pass x and y if we know where the window is?
+% compute disparity and intensity fluctuations over pixels in window
 %cache shifted!
 for i = x-window.XCenter + 1:x+window.XCenter -1
     for j = y-window.YCenter + 1:y+window.YCenter -1
-        
+
+        % x from (2nd) view (?)
         shiftedX = i - stereoImg.DisparityMap(y,x);
         
-        if (shiftedX > 1)
+        if (shiftedX > 1) % if in the image
             
-            %intensity
+            % calculate intensity diff accross pair
+	% should there be a squared in here?
             intensFluct = intensFluct + ...
-                stereoImg.DerivView2(j, shiftedX);
+                stereoImg.DerivView2(j, shiftedX); 
             
             %disparity
             dispDiff = (stereoImg.DisparityMap(j,i) - ...
                 stereoImg.DisparityMap(y,x))^2;
-            % if passing through the center
+            % if passing through the center (why only then?)
             if ~(i == x && j == y)
                 distanceFromCenter = sqrt((i-x)^2 + (j-y)^2);
                 dispFluct = dispFluct + dispDiff/distanceFromCenter;
