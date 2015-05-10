@@ -51,7 +51,7 @@ classdef Window
               newWin.width = oldWin.width + 1;
               newWin.height = oldWin.height;
           end
-          
+
           % update window center
           if direction == 1
               newWin.YCenter = oldWin.YCenter + 1;
