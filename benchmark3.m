@@ -1,3 +1,7 @@
+%% Banchmark 3
+% Create general shell for our future implementation of the math in the 
+% paper
+
 % import some classes
 import StereoImage;
 import Window;
@@ -18,6 +22,8 @@ groundTruth = imread('/home/weinman/courses/CSC262/images/truedisp.png');
 % distance) to match scaled images.
 groundTruth = double(groundTruth)/3;
 
+% get the initial disparity map via class and functional form of benchmark
+% 1 (ie vary over all disparities and 9 window shapes)
 originalDisparity = stereoImg.DisparityMap;
 
 % We don't have to vary over all disparities -- we already have estimates!

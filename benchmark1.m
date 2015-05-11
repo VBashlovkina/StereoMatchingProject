@@ -1,3 +1,7 @@
+%% Benchmark 1
+% Follow instructions in "Project Starter Idea" section of stereo 
+% disparity lab to see how window shapes effect disparity prediction
+
 % load two stereo images
 view1 = im2double(imread('/home/weinman/courses/CSC262/images/view1.png')); 
 view2 = im2double(imread('/home/weinman/courses/CSC262/images/view5.png'));
@@ -26,13 +30,13 @@ nonZeroIndices = find(groundTruth);
 zeroIndices = find(groundTruth <= 0);
 
 % create 9 different window shapes
-N=16;
+N=22;
 mid = floor(N/2);
 
 shapes = zeros( N, N, 9);
 shapes(:, :, 1) = 1/(N^2);
-shapes(:,:,1) = 0; % should this be here?
-shapes(3:14, 3:14, 1) = 1/(12^2);
+%shapes(:,:,1) = 0; % should this be here?
+%shapes(3:14, 3:14, 1) = 1/(12^2); %or this???
 % 4 vertically and horozontally divided kernels, normalized
 % left and right kernels
 shapes( :, 1:mid, 3) = ones(N, mid) / (N*mid); % magic kernel
@@ -92,18 +96,6 @@ end
 [minDisp, dispIndices] = min(minShape, [], 3);
 BestShapeIndices = ShapeIndices(dispIndices);
 
-% calculate RMS error between prediction and real disparity
-disparityDiff = bsxfun(@minus, groundTruth(nonZeroIndices), dispIndices(nonZeroIndices));
-
-% rms2 = rms(disparityDiff2); % function rms yields same value
-%squaredDDif = disparityDiff.^2;
-%meanSquared = mean(squaredDDif(:));
-%RMS = sqrt(meanSquared);
-
-
-% display 2d versions
-%figure, imshow(groundTruth, []), title('True Disparity 2d'), colormap jet;
-
 % set predicted disparity to zero in appropriate places
 disparityPrediction = dispIndices;
 disparityPrediction(zeroIndices) = 0;
@@ -112,10 +104,6 @@ figure, imshow(BestShapeIndices, []), colormap(jet),colorbar, title('Window Shap
 figure, imshow(disparityPrediction, []), colormap(jet), colorbar;
 title('Disparity Prediction with 9 Window Shapes');
 
-% display 2d versions
-%figure, imshow(disparityPrediction2, []), title('Predicted Disparity 2d');
-%colormap jet;
-RMS
 % noise reduction: gaussian convolution
 % gauss = gkern(1);
 % reducedNoise1 = conv2(gauss, gauss', disparityPrediction, 'same');
@@ -132,16 +120,15 @@ fullDispDiff = groundTruth - disparityPrediction;
 fullDispDiff(zeroIndices) = 0;
 figure, imshow(fullDispDiff), title('Disparity Error Produced with 9 Window Shapes');
 
-% 3d predicted disparity
+% 3d predicted error
 figure, surf(fullDispDiff, 'EdgeColor','none'), title('Depth Error Produced with 9 Window Shapes');
 axis ij;
 view(48,52);
 % RMS = 8.7401 after blurrig, 9.3472 before
 
 
-error3D9 = imread('3Derror9shapes.jpg');
 error3D1 = imread('3Derror1shape.jpg');
 figure;
 subplot(1,2,1), imshow(error3D1);
-subplot(1,2,2), imshow(error3D9);
+subplot(1,2,2), imshow(fullDispDiff);
 truesize;

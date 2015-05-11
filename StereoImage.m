@@ -14,7 +14,8 @@ classdef StereoImage
         function obj = StereoImage(view1, view2)
             obj.View1 = view1;
             obj.View2 = view2;
-            % initial disparity calculation using the algorithm developped in lab
+            % initial disparity calculation using the algorithm developped
+            % in lab
             obj.DisparityMap = initialDisparity(view1, view2);
             % computing the deriv map FIXME, ONLY NEED X DIRECTION
             derivGauss = gkern(2,1);

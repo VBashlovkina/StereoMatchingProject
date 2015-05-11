@@ -1,13 +1,13 @@
 function [ dispIndices ] = initialDisparity( view1, view2 )
-%INITIALDISPARITY compute initial estimates for disparity
+% INITIALDISPARITY compute initial estimates for disparity between two 
+%   stereo images.
 %   This function solves the correspondence problem and computes the
-%   disparity for each pixel in an image by varying possible disparities
+%   disparity for each pixel in an image by varying over possible disparities
 %   and 9 window shapes and choosing the combination that minimizes SSD.
 
-
-
+% to generalize, extract the max disparity from the ground truth data?
 maxDisparity = 75;
-% pad images
+% pad images with max disparity
 padView1 = padarray(view1, [0 maxDisparity], 'post');
 padView2 = padarray(view2, [0 maxDisparity], 'post');
 
@@ -39,25 +39,25 @@ result = zeros(height, width, maxDisparity, size(shapes, 3)); %% <- HARDCODE
 
 % for each of the 9 shapes
 for j = 1:size(shapes, 3)
-        
-% check every disparity up to max
-for i=maxDisparity:-1:1
-    % create shifted view based on disparity
-    shiftedView2 = imtranslate(padView2, 0, -i, 0);
     
-    % computing squared differences
-    squaredDiffs = (padView1-shiftedView2).^2;
-
-    % convolution to get patch SSDs, vary patch shape
-    kernel = shapes(:,:,j);
-    % place in appropriate 'slice' of result array
-    result(:,:,i, j) = conv2(squaredDiffs, kernel, 'same');     
+    % check every disparity up to max
+    for i=maxDisparity:-1:1
+        % create shifted view based on disparity
+        shiftedView2 = imtranslate(padView2, 0, -i, 0);
+        
+        % computing squared differences
+        squaredDiffs = (padView1-shiftedView2).^2;
+        
+        % convolution to get patch SSDs, vary patch shape
+        kernel = shapes(:,:,j);
+        % place in appropriate 'slice' of result array
+        result(:,:,i, j) = conv2(squaredDiffs, kernel, 'same');
+    end
 end
-end 
 
 
 [minShape, ShapeIndices] = min(result(:, 1:end-maxDisparity, :, :), [], 4);
-% which disparities minimized SSD 
+% which disparities minimized SSD
 [minDisp, dispIndices] = min(minShape, [], 3);
 % which shapes got used for each pixel
 BestShapeIndices = ShapeIndices(dispIndices);
