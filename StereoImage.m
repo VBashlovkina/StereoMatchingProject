@@ -20,9 +20,10 @@ classdef StereoImage
             % computing the deriv map FIXME, ONLY NEED X DIRECTION
             derivGauss = gkern(2,1);
             gauss = gkern(2);
-            yderivMap = conv2(derivGauss, gauss', view2, 'same');
+            % yderivMap = conv2(derivGauss, gauss', view2, 'same');
             xderivMap = conv2(gauss, derivGauss', view2, 'same');
-            obj.DerivView2 = sqrt(yderivMap.^2 + xderivMap.^2);
+            obj.DerivView2 = xderivMap;
+	    % obj.DerivView2 = sqrt(yderivMap.^2 + xderivMap.^2);
         end
         
         
