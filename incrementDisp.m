@@ -28,12 +28,13 @@ height = window.edges(3) - window.edges(1) + 1;
 N = width * height; % number of elements, for future normalization
 x = window.x;
 y = window.y;
+genNum = 0;
 
 % loop for phi1 and phi2
 for i = window.edges(4):window.edges(2)
     for j = window.edges(1):window.edges(3)
         
-        shiftedX = i - stereoImg.DisparityMap(y,x);
+        shiftedX = i - round(stereoImg.DisparityMap(y,x));
         if (shiftedX >= 1) % if a valid index
             
             % calculate phi1
@@ -42,6 +43,7 @@ for i = window.edges(4):window.edges(2)
             % calculate numerator of phi1*phi2
             phi1phi2num = intensityDiff*stereoImg.DerivView2(j, shiftedX);
             
+            % calculate numerator of increment
             genNum = genNum + phi1phi2num/...
                 window.normalizerMap(j - window.edges(1) +1, i - window.edges(4) + 1);
             

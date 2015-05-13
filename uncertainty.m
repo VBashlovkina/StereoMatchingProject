@@ -20,12 +20,14 @@ top = window.edges(1);
 right = window.edges(2);
 bottom = window.edges(3);
 left = window.edges(4);
+
 % if window is out of bounds, stop
 if top < 1 || left < 1 || bottom > size(stereoImg.View1,1) || ...
         right > size(stereoImg.View1,2)
     uncert = Inf;
     return
 end
+
 width = right - left + 1;
 height = bottom - top + 1;
 
@@ -43,7 +45,7 @@ for i = left:right
 
         % estimate for corresponding x in second view
 	% x' = x - disparity
-        shiftedX = i - stereoImg.DisparityMap(y,x); % note y is row
+        shiftedX = i - round(stereoImg.DisparityMap(y,x)); % note y is row
         
         if (shiftedX > 1) % if this point is an index
             
@@ -85,7 +87,7 @@ for i = left:right
     for j = top:bottom
 
 	% get x coord in second image estimated by current disparity
-        shiftedX = i - stereoImg.DisparityMap(y,x);
+        shiftedX = i - round(stereoImg.DisparityMap(y,x));
         
         if (shiftedX >= 1) % if a valid index
             % window coordinates
@@ -93,7 +95,7 @@ for i = left:right
             eta = j - y;
             % computing numerator and denominator of phi2:
 	        % intensity derivs of view 2 / normalizer
-            numSq = (stereoImg.DerivView2(j, i - stereoImg.DisparityMap(y,x)))^2;
+            numSq = (stereoImg.DerivView2(j, shiftedX))^2;
             denomSq = noiseSigma + (p+dispFluct)*(p+intensFluct)*sqrt(xi^2 + eta^2);
 	        %denom = sqrt(noiseSigma + (p+dispFluct)*(p+intensFluct)*sqrt(xi^2 + eta^2));
             %uncert = uncert + num/denom; % create sum of phi2 over window
