@@ -18,30 +18,6 @@ grid = meshgrid(1:width, 1:height);
 shiftedXIndices = grid - stereoImg.DisparityMap;
 
 
-window = Window;
-oldWin = window;
-x = 392;
-y = 202;
-uncert = uncertainty(stereoImg, x, y, window);
-incr = incrementDisp(stereoImg, x, y, window);
-colRight = Window.expand(window, 2);
-%window = Window;
-rowAbove = Window.expand(window, 1);
-%window = Window;
-rowBelow = Window.expand(window, 3);
-%window = Window;
-colLeft = Window.expand(window, 4);
-incr = incrementDisp(stereoImg, x, y, colRight);
-
-wins = [colRight, rowBelow, rowAbove, colLeft];
-for i = 1:4
-    uncerts(i) = uncertainty(stereoImg, x, y, wins(i));
-    % i dont understand why this doesnt expand the window 8 times total
-    %uncerts(i) = uncertainty(stereoImg, x, y, Window.expand(window,i));
-end
-uncerts
-% best direction in colLeft
-
 %% Making a test image
 w = 70;
 h = 50;
@@ -50,8 +26,6 @@ gradient1 = imnoise(linGrad/(size(linGrad,2)),'gaussian'); % add noise
 % make up ground truth disparity 
 dispBox = 3*ones(h, w); % most things displaced by 3
 dispBox(15:h-15,20:w-20) = 8; % central piece is displaced by 7
-
-
 
 % from http://stackoverflow.com/questions/7132863/non-uniform-shifting-of-pixels
 %# create coordinate grid for image gradient1
@@ -75,7 +49,14 @@ testStImg = StereoImage(gradient1,gradient2);
 % cheat: get the actual dispairty ground truth with some noise
 testStImg.DisparityMap = dispBox + round(rand(h,w));
 
-% Estimating uncertainty on the edges of the central square
+
+%% Testing increment
+x = 34;
+y = 13;
+[uncert, win] = uncertainty(testStImg, NewWindow(x,y));
+incr = incrementDisp(testStImg, win, uncert);
+
+%% Estimating uncertainty on the edges of the central square
 xCoords = [34 52 38 18];
 yCoords = [13 19 37 25];
 edgeCoords = [xCoords' yCoords'];
@@ -83,9 +64,7 @@ edgeNames = {'top edge', 'right edge','bottom edge','left edge'};
 smallWinUncerts = ones(1, length(xCoords));
 bigWinUncerts = ones(length(xCoords));
 for k = 1:length(xCoords)
-    %x = xCoords(k);
     x = edgeCoords(k,1);
-    %y = yCoords(k);
     y = edgeCoords(k,2);
     window = NewWindow(x,y);
     smallWinUncerts(k) = uncertainty(testStImg, window);
@@ -96,7 +75,7 @@ for k = 1:length(xCoords)
     end
 end
 
-% Estimating uncertainty in the corners of the central square
+%% Estimating uncertainty in the corners of the central square
 xCoords = [49 49 21 21];
 yCoords = [16 34 16 34];
 edgeCoords = [xCoords' yCoords'];
@@ -104,9 +83,7 @@ edgeNames = {'top edge', 'right edge','bottom edge','left edge'};
 smallWinUncerts = ones(1, length(xCoords));
 bigWinUncerts = ones(length(xCoords));
 for k = 1:length(xCoords)
-    %x = xCoords(k);
     x = edgeCoords(k,1);
-    %y = yCoords(k);
     y = edgeCoords(k,2);
     window = NewWindow(x,y);
     smallWinUncerts(k) = uncertainty(testStImg, window);

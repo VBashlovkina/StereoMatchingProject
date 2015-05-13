@@ -1,12 +1,13 @@
-function [ uncert ] = uncertainty( stereoImg, window)
+function [ uncert, window ] = uncertainty( stereoImg, window)
 %UNCERTAINTY estimates the uncertainty of the disparity estimate for the
 % pair of images within STEREOIMAGE over a WINDOW. STEREOIMG is a member
 % of our StereoImage class and window is a member of NewWindow class.
+% WINDOW is updated with a normalizer map used for caching.
 %
 % This function estimates the uncertainity of the disparity over the window
 % based on Kanade and Okutomi's statistical model for stereo matching. This
-% model related the uncertainty of the disparity to the intensity and 
-% disparity variations within a window and 
+% model relates the uncertainty of the disparity to the intensity and 
+% disparity variations within a window
 
 % Authors:
 % Renn Jervis 
@@ -15,8 +16,8 @@ function [ uncert ] = uncertainty( stereoImg, window)
 % CSC 262 Final Project
 
 % get dimensions of window
-width = window.edges(2) - window.edges(4) + 1;
-height = window.edges(3) - window.edges(1) + 1;
+width = window.edges(2) - window.edges(4) + 1
+height = window.edges(3) - window.edges(1) + 1
 N = width * height; % number of elements, for future normalization
 
 % initialize both diparity and intensity fluctuations
@@ -64,6 +65,10 @@ uncert = 0;
 % padding for flat disparity
 p = .0001;
 p=0;
+
+
+window.normalizerMap = zeros(height,width);
+
 % computing uncertainty; for each pixel in window...
 for i = window.edges(4):window.edges(2)
     for j = window.edges(1):window.edges(3)
@@ -76,12 +81,15 @@ for i = window.edges(4):window.edges(2)
             xi = i - x;
             eta = j - y;
             % computing numerator and denominator of phi2:
-	       % intensity derivs of view 2 / normalizer
+	        % intensity derivs of view 2 / normalizer
             numSq = (stereoImg.DerivView2(j, i - stereoImg.DisparityMap(y,x)))^2;
             denomSq = noiseSigma + (p+dispFluct)*(p+intensFluct)*sqrt(xi^2 + eta^2);
 	        %denom = sqrt(noiseSigma + (p+dispFluct)*(p+intensFluct)*sqrt(xi^2 + eta^2));
             %uncert = uncert + num/denom; % create sum of phi2 over window
-	        uncert = uncert + numSq/denomSq;
+            
+            % cache normalizer
+            window.normalizerMap(j - window.edges(1) +1, i - window.edges(4) + 1) = numSq/denomSq;
+	        uncert = uncert + window.normalizerMap(j - window.edges(1) + 1, i - window.edges(4) + 1);
         end
     end
 end

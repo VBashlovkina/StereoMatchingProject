@@ -1,4 +1,4 @@
-function [ incr ] = incrementDisp( stereoImg, window )
+function [ incr ] = incrementDisp( stereoImg, window , uncert )
 % INCREMENTDISP produces INCR, a value by which the current measure of
 % disparity at given pixel (D(Y,X)) should be incremented. STEREOIMAGE is a
 % member of our StereoImage class which contains 2 stereo view, a disparity
@@ -26,76 +26,38 @@ function [ incr ] = incrementDisp( stereoImg, window )
 width = window.edges(2) - window.edges(4) + 1;
 height = window.edges(3) - window.edges(1) + 1;
 N = width * height; % number of elements, for future normalization
-
-incr = 0;
-% initialize variables
-
-dispFluct = 0;
-intensFluct = 0;
-phi1 = 0;
-phi2 = 0;
-genNum = 0;
-genDenom = 0;
-p=0;
-% consider refactoring phi 1 and 2 into functions?
-% first calculate disparity and intensity fluctuation
-
-for i = x-window.XCenter + 1:x+window.XCenter -1
-    for j = y-window.YCenter + 1:y+window.YCenter -1
-        
-        shiftedX = i - stereoImg.DisparityMap(y,x); % note y is row
-        
-        if (shiftedX > 1) % if this point is an index
-            % sum over all pixels of intensity derivative of image 2 squared
-            intensFluct = intensFluct + ...
-                stereoImg.DerivView2(j, shiftedX).^2;
-            
-            % calculate difference in disparity
-            dispDiff = (stereoImg.DisparityMap(j,i) - ...
-                stereoImg.DisparityMap(y,x))^2;
-            dispDiff = dispDiff.^2;
-            
-            % if we are not at center pixel, calculate distance
-            if ~(i == x && j == y)
-                distanceFromCenter = sqrt((i-x)^2 + (j-y)^2);
-                dispFluct = dispFluct + dispDiff/distanceFromCenter;
-            end
-        end
-    end
-end
-
-% scale for number of elements
-dispFluct = dispFluct/N;
-intensFluct = intensFluct/N;
-
-% What is noise power?
-noiseSigma = .5;
+x = window.x;
+y = window.y;
 
 % loop for phi1 and phi2
-for i = x-window.XCenter + 1:x+window.XCenter -1
-    for j = y-window.YCenter + 1:y+window.YCenter
+for i = window.edges(4):window.edges(2)
+    for j = window.edges(1):window.edges(3)
         
-        if (shiftedX > 1) % if a valid index
-            % window coordinates
-            xi = i - x;
-            eta = j - y;
+        shiftedX = i - stereoImg.DisparityMap(y,x);
+        if (shiftedX >= 1) % if a valid index
             
             % calculate phi1
-            intensityDiff = stereoImg.View1(j, i) - stereoImg.View2(j, i-shiftedX);
-            denom = sqrt(noiseSigma + (p+dispFluct)*(p+intensFluct)*sqrt(xi^2 +eta^2));
-            phi1 = phi1 + intensityDiff/denom;
+            intensityDiff = stereoImg.View1(j, i) - stereoImg.View2(j, shiftedX);
+            
+            phi1phi2num = intensityDiff*stereoImg.DerivView2(j, shiftedX);
+            
+            genNum = genNum + phi1phi2num/...
+                window.normalizerMap(j - window.edges(1) +1, i - window.edges(4) + 1);
+            
+            %denom = sqrt(noiseSigma + (p+dispFluct)*(p+intensFluct)*sqrt(xi^2 +eta^2));
+            %phi1 = phi1 + intensityDiff/denom;
             
             % calc phi1  
-            dervIntensity = stereoImg.DerivView2(j, i - shiftedX);
-            phi2 = phi2 + (dervIntensity/denom)^2;
+            %dervIntensity = stereoImg.DerivView2(j, shiftedX);
+            %phi2 = phi2 + (dervIntensity/denom)^2;
             
-            genNum = genNum+ (phi1 * phi2);
-            genDenom = genDenom + phi2;
+            %genNum = genNum+ (phi1 * phi2);
+            %genDenom = genDenom + phi2;
             
         end
     end
 end
     
-incr = genNum / genDenom;
+incr = genNum * uncert;
 return
 end
