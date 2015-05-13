@@ -1,6 +1,6 @@
 %% Banchmark 3
-% Create general shell for our future implementation of the math in the 
-% paper
+% Create general shell for our future implementation of the math in Kanade
+% and Okutomi
 
 % import some classes
 import StereoImage;

@@ -23,23 +23,24 @@ oldWin = window;
 x = 392;
 y = 202;
 uncert = uncertainty(stereoImg, x, y, window);
-
+incr = incrementDisp(stereoImg, x, y, window);
 colRight = Window.expand(window, 2);
-window = Window;
+%window = Window;
 rowAbove = Window.expand(window, 1);
-window = Window;
+%window = Window;
 rowBelow = Window.expand(window, 3);
-window = Window;
+%window = Window;
 colLeft = Window.expand(window, 4);
+incr = incrementDisp(stereoImg, x, y, colRight);
 
-wins = [colRigth, rowBelow, rowAbove, colRigth];
+wins = [colRight, rowBelow, rowAbove, colLeft];
 for i = 1:4
-    %uncerts(i) = uncertainty(stereoImg, x, y, wins(i));
+    uncerts(i) = uncertainty(stereoImg, x, y, wins(i));
     % i dont understand why this doesnt expand the window 8 times total
-    uncerts(i) = uncertainty(stereoImg, x, y, Window.expand(window,i));
+    %uncerts(i) = uncertainty(stereoImg, x, y, Window.expand(window,i));
 end
 uncerts
-
+% best direction in colLeft
 
 %% Making a test image
 w = 70;
@@ -59,14 +60,15 @@ dispBox(15:h-15,20:w-20) = 7; % central piece is displaced by 7
 xx = xx(:);
 yy = yy(:);
 linDispBox = dispBox(:);
-B(:,2) = linDispBox;
-B(:,1) = 0;
+B(:,2) = linDispBox; 
+B(:,1) = 0; 
 xxShifted = xx + B(:,1);
 yyShifted = yy + B(:,2);
 %# preassign C to the right size and interpolate
 gradient2  = gradient1;
 %gradient2(:) = interp2(xx,yy,gradient1(:),xxShifted,yy);
 gradient2(:) = griddata(xx,yy,gradient1(:),xxShifted,yyShifted);
+%gradient2(:) = griddata(xx,yy,gradient1(:),xxShifted,yy);
 
 % initialize new stereo image set based in gradients
 testStImg = StereoImage(gradient1,gradient2);
@@ -83,8 +85,10 @@ smallWinUncerts = ones(1, length(xCoords));
 bigWinUncerts = ones(length(xCoords));
 for k = 1:length(xCoords)
     window = Window;
-    x = edgeCoords(k,1);
-    y = edgeCoords(k,2);
+    x = xCoords(k);
+    %x = edgeCoords(k,1);
+    y = yCoords(k);
+    %y = edgeCoords(k,2);
     smallWinUncerts(k) = uncertainty(testStImg, x, y, window);
     fprintf('%s, 3X3 uncert = %e\n',edgeNames{k}, smallWinUncerts(k));
     for i = 1:4
@@ -94,7 +98,7 @@ for k = 1:length(xCoords)
 end
 
 window = Window;
-<<<<<<< HEAD
+% <<<<<<< HEAD
 x = 34; y = 13; % top edge
 topUncert = uncertainty(testStImg, x, y, window);
 for i = 1:4
@@ -123,9 +127,9 @@ end
 bottomUncert
 bottomEdgeUncerts
 %% conclusion: it kinda works!
-=======
+%=======
 uncert = uncertainty(testStImg, x, y, window);
 uncertLeft = uncertainty(testStImg, x, y, Window.expand(window, 4)); % big
 uncertRight = uncertainty(testStImg, x, y, Window.expand(window, 2)); % same
 %% conclusion: it kinda works!
->>>>>>> 67b4063678f31a035435ab69ae06b0e532be2342
+%>>>>>>> 67b4063678f31a035435ab69ae06b0e532be2342
