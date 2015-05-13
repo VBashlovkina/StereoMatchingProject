@@ -72,10 +72,52 @@ testStImg = StereoImage(gradient1,gradient2);
 % cheat: get the actual dispairty ground truth with some noise
 testStImg.DisparityMap = dispBox + round(rand(h,w));
 
-x = 52; y = 20; % on the right edge of the center rectangle
-% estimate its uncert
+% testing each edge of the disparity
+% order: above, right, below, left
+xCoords = [34 52 38 18];
+yCoords = [13 19 37 25];
+edgeCoords = [xCoords' yCoords'];
+edgeNames = {'top edge', 'right edge','bottom edge','left edge'};
+smallWinUncerts = ones(1, length(xCoords));
+bigWinUncerts = ones(length(xCoords));
+for k = 1:length(xCoords)
+    window = Window;
+    x = edgeCoords(k,1);
+    y = edgeCoords(k,2);
+    smallWinUncerts(k) = uncertainty(testStImg, x, y, window);
+    fprintf('%s, 3X3 uncert = %e\n',edgeNames{k}, smallWinUncerts(k));
+    for i = 1:4
+        bigWinUncerts(k,i) = uncertainty(testStImg, x, y, Window.expand(window,i));
+        fprintf('\t %s expansion uncert = %e\n', edgeNames{i}, bigWinUncerts(k,i));
+    end
+end
+
 window = Window;
-uncert = uncertainty(testStImg, x, y, window);
-uncertLeft = uncertainty(testStImg, x, y, Window.expand(window, 4)); % big
-uncertRight = uncertainty(testStImg, x, y, Window.expand(window, 2)); % same
+x = 34; y = 13; % top edge
+topUncert = uncertainty(testStImg, x, y, window);
+for i = 1:4
+    topEdgeUncerts(i) = uncertainty(testStImg, x, y, Window.expand(window,i));
+end
+'top edge'
+topUncert
+topEdgeUncerts
+
+
+x = 52; y = 20; % on the right edge of the center rectangle
+rigthUncert = uncertainty(testStImg, x, y, window);
+for i = 1:4
+    rigthEdgeUncerts(i) = uncertainty(testStImg, x, y, Window.expand(window,i));
+end
+'right edge'
+rigthUncert
+rigthEdgeUncerts
+
+x = 52; y = 20; % on the right edge of the center rectangle
+bottomUncert = uncertainty(testStImg, x, y, window);
+for i = 1:4
+    bottomEdgeUncerts(i) = uncertainty(testStImg, x, y, Window.expand(window,i));
+end
+'right edge'
+bottomUncert
+bottomEdgeUncerts
 %% conclusion: it kinda works!
