@@ -39,7 +39,6 @@ result = zeros(height, width, maxDisparity, size(shapes, 3)); %% <- HARDCODE
 
 % for each of the 9 shapes
 for j = 1:size(shapes, 3)
-    
     % check every disparity up to max
     for i=maxDisparity:-1:1
         % create shifted view based on disparity
@@ -55,7 +54,8 @@ for j = 1:size(shapes, 3)
     end
 end
 
-
+str = 'almost computed disparity';
+str 
 [minShape, ShapeIndices] = min(result(:, 1:end-maxDisparity, :, :), [], 4);
 % which disparities minimized SSD
 [minDisp, dispIndices] = min(minShape, [], 3);
