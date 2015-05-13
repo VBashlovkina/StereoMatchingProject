@@ -1,5 +1,10 @@
 classdef Window
     %WINDOW encapsulates information about convolution windows
+    % Authors:
+    % Renn Jervis 
+    % Vasilisa Bashlovkina
+    %
+    % CSC 262 Final Project
     
     properties
         % the window itself

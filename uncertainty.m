@@ -1,8 +1,13 @@
 function [ uncert ] = uncertainty( stereoImg, window)
 %UNCERTAINTY estimates the uncertainty of the disparity estimate for the
 % pair of images within STEREOIMAGE over a WINDOW centered at the X, Y.  
-
+% Authors:
+% Renn Jervis 
+% Vasilisa Bashlovkina
+%
+% CSC 262 Final Project
 % get dimensions of window
+
 width = window.edges(2) - window.edges(4) + 1;
 height = window.edges(3) - window.edges(1) + 1;
 N = width * height; % number of elements, for future normalization

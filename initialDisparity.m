@@ -7,8 +7,13 @@ function [ dispIndices ] = initialDisparity( view1, view2 )
 %   disparity for each pixel in an image by varying over all possible
 %   disparities and 9 window shapes and choosing the combination that
 %   minimizes SSD over a 16 X 16 patch.
+%
+% Authors:
+% Renn Jervis 
+% Vasilisa Bashlovkina
+%
+% CSC 262 Final Project
 
-% to generalize, extract the max disparity from the ground truth data?
 maxDisparity = 75;
 % pad images with max disparity
 padView1 = padarray(view1, [0 maxDisparity], 'post');

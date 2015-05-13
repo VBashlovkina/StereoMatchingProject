@@ -106,11 +106,10 @@ figure, imshow(BestShapeIndices, []), colormap(jet),colorbar, title('Window Shap
 figure, imshow(disparityPrediction, []), colormap(jet), colorbar;
 title('Disparity Prediction with 9 Window Shapes');
 
-% noise reduction: gaussian convolution
-% gauss = gkern(1);
+% optional noise reduction: gaussian convolution gauss = gkern(1);
 % reducedNoise1 = conv2(gauss, gauss', disparityPrediction, 'same');
-% disparityPrediction(zeroIndices) = 0;
-% figure, imshow(disparityPrediction, []), title('Disparity Predicted with 9 Window Shapes');
+% disparityPrediction(zeroIndices) = 0; figure, imshow(disparityPrediction,
+% []), title('Noise Reduced Disparity Predicted with 9 Window Shapes');
 % colormap jet;
 
 % calculate RMS error between prediction and real disparity
@@ -121,14 +120,12 @@ RMS = sqrt(meanSquared);
 
 fullDispDiff = groundTruth - disparityPrediction;
 fullDispDiff(zeroIndices) = 0;
-figure, imshow(fullDispDiff), title('Disparity Error Produced with 9 Window Shapes');
 
-% 3d predicted error
-% figure, surf(fullDispDiff, 'EdgeColor','none'), title('Depth Error Produced with 9 Window Shapes');
-% axis ij;
-% view(48,52);
+%3d predicted error
+figure, surf(fullDispDiff, 'EdgeColor','none'), title('Depth Error Produced with 9 Window Shapes');
+axis ij;
+view(48,52);
 % RMS = 8.7401 after blurrig, 9.3472 before
-
 
 %error3D1 = imread('3Derror1shape.jpg');
 %figure;
