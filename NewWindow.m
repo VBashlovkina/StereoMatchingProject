@@ -1,5 +1,5 @@
 classdef NewWindow
-    %WINDOW encapsulates information about convolution windows
+    % WINDOW encapsulates information about convolution windows
     
     properties
         x

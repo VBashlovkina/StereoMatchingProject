@@ -1,13 +1,20 @@
 function [ uncert ] = uncertainty( stereoImg, window)
 %UNCERTAINTY estimates the uncertainty of the disparity estimate for the
-% pair of images within STEREOIMAGE over a WINDOW centered at the X, Y.  
+% pair of images within STEREOIMAGE over a WINDOW. STEREOIMG is a member
+% of our StereoImage class and window is a member of NewWindow class.
+%
+% This function estimates the uncertainity of the disparity over the window
+% based on Kanade and Okutomi's statistical model for stereo matching. This
+% model related the uncertainty of the disparity to the intensity and 
+% disparity variations within a window and 
+
 % Authors:
 % Renn Jervis 
 % Vasilisa Bashlovkina
 %
 % CSC 262 Final Project
-% get dimensions of window
 
+% get dimensions of window
 width = window.edges(2) - window.edges(4) + 1;
 height = window.edges(3) - window.edges(1) + 1;
 N = width * height; % number of elements, for future normalization
