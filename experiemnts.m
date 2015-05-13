@@ -75,8 +75,7 @@ testStImg = StereoImage(gradient1,gradient2);
 % cheat: get the actual dispairty ground truth with some noise
 testStImg.DisparityMap = dispBox + round(rand(h,w));
 
-% testing each edge of the disparity
-% order: above, right, below, left
+% Estimating uncertainty on the edges of the central square
 xCoords = [34 52 38 18];
 yCoords = [13 19 37 25];
 edgeCoords = [xCoords' yCoords'];
@@ -84,79 +83,36 @@ edgeNames = {'top edge', 'right edge','bottom edge','left edge'};
 smallWinUncerts = ones(1, length(xCoords));
 bigWinUncerts = ones(length(xCoords));
 for k = 1:length(xCoords)
-    window = Window;
-    x = xCoords(k);
-    %x = edgeCoords(k,1);
-    y = yCoords(k);
-    %y = edgeCoords(k,2);
-    smallWinUncerts(k) = uncertainty(testStImg, x, y, window);
-    fprintf('%s, 3X3 uncert = %e\n',edgeNames{k}, smallWinUncerts(k));
+    %x = xCoords(k);
+    x = edgeCoords(k,1);
+    %y = yCoords(k);
+    y = edgeCoords(k,2);
+    window = NewWindow(x,y);
+    smallWinUncerts(k) = uncertainty(testStImg, window);
+    fprintf('%s, 3X3 uncert = %f\n',edgeNames{k}, smallWinUncerts(k));
     for i = 1:4
-        bigWinUncerts(k,i) = uncertainty(testStImg, x, y, Window.expand(window,i));
-        fprintf('\t %s expansion uncert = %e\n', edgeNames{i}, bigWinUncerts(k,i));
+        bigWinUncerts(k,i) = uncertainty(testStImg, NewWindow.expand(window,i));
+        fprintf('\t %s expansion uncert = %f\n', edgeNames{i}, bigWinUncerts(k,i));
     end
 end
 
-window = Window;
-
-x = 34; y = 13; % top edge
-topUncert = uncertainty(testStImg, x, y, window);
-for i = 1:4
-    topEdgeUncerts(i) = uncertainty(testStImg, x, y, Window.expand(window,i));
+% Estimating uncertainty in the corners of the central square
+xCoords = [49 49 21 21];
+yCoords = [16 34 16 34];
+edgeCoords = [xCoords' yCoords'];
+edgeNames = {'top edge', 'right edge','bottom edge','left edge'};
+smallWinUncerts = ones(1, length(xCoords));
+bigWinUncerts = ones(length(xCoords));
+for k = 1:length(xCoords)
+    %x = xCoords(k);
+    x = edgeCoords(k,1);
+    %y = yCoords(k);
+    y = edgeCoords(k,2);
+    window = NewWindow(x,y);
+    smallWinUncerts(k) = uncertainty(testStImg, window);
+    fprintf('%s, 3X3 uncert = %f\n',edgeNames{k}, smallWinUncerts(k));
+    for i = 1:4
+        bigWinUncerts(k,i) = uncertainty(testStImg, NewWindow.expand(window,i));
+        fprintf('\t %s expansion uncert = %f\n', edgeNames{i}, bigWinUncerts(k,i));
+    end
 end
-'top edge'
-topUncert
-topEdgeUncerts
-
-
-x = 52; y = 20; % on the right edge of the center rectangle
-rigthUncert = uncertainty(testStImg, x, y, window);
-for i = 1:4
-    rigthEdgeUncerts(i) = uncertainty(testStImg, x, y, Window.expand(window,i));
-end
-'right edge'
-rigthUncert
-rigthEdgeUncerts
-
-x = 52; y = 20; % on the right edge of the center rectangle
-bottomUncert = uncertainty(testStImg, x, y, window);
-for i = 1:4
-    bottomEdgeUncerts(i) = uncertainty(testStImg, x, y, Window.expand(window,i));
-end
-'right edge'
-bottomUncert
-bottomEdgeUncerts
-<<<<<<< HEAD
-%% conclusion: it kinda works!
-%=======
-uncert = uncertainty(testStImg, x, y, window);
-uncertLeft = uncertainty(testStImg, x, y, Window.expand(window, 4)); % big
-uncertRight = uncertainty(testStImg, x, y, Window.expand(window, 2)); % same
-%% conclusion: it kinda works!
-
-
-%% conclusion: it kinda works!x = 34; y = 13; % top edge
-topUncert = uncertainty(testStImg, window);
-for i = 1:4
-    newWindow = window;
-    NewWindow.expand(newWindow,i);
-    topEdgeUncerts(i) = uncertainty(testStImg, newWindow);
-end
-'top edge'
-topUncert
-topEdgeUncerts
-
-uncert = uncertainty(testStImg, x, y, window);
-uncertLeft = uncertainty(testStImg, x, y, Window.expand(window, 4)); % big
-uncertRight = uncertainty(testStImg, x, y, Window.expand(window, 2)); % same
-
-window = NewWindow(21,34);
-topUncert = uncertainty(testStImg, window);
-for i = 1:4
-    newWindow = NewWindow.expand(window,i);
-    topEdgeUncerts(i) = uncertainty(testStImg, newWindow);
-end
-'top edge'
-topUncert
-topEdgeUncerts
-
