@@ -64,7 +64,7 @@ for i = window.edges(4):window.edges(2)
             xi = i - x;
             eta = j - y;
             % computing numerator and denominator of phi2:
-	    % intensity derivs of view 2 / normalizer
+	       % intensity derivs of view 2 / normalizer
             numSq = (stereoImg.DerivView2(j, i - stereoImg.DisparityMap(y,x)))^2;
             denomSq = noiseSigma + (p+dispFluct)*(p+intensFluct)*sqrt(xi^2 + eta^2);
 	        %denom = sqrt(noiseSigma + (p+dispFluct)*(p+intensFluct)*sqrt(xi^2 + eta^2));
