@@ -16,8 +16,19 @@ function [ uncert, window ] = uncertainty( stereoImg, window)
 % CSC 262 Final Project
 
 % get dimensions of window
-width = window.edges(2) - window.edges(4) + 1
-height = window.edges(3) - window.edges(1) + 1
+top = window.edges(1);
+right = window.edges(2);
+bottom = window.edges(3);
+left = window.edges(4);
+% if window is out of bounds, stop
+if top < 1 || left < 1 || bottom > size(stereoImg.View1,1) || ...
+        right > size(stereoImg.View1,2)
+    uncert = Inf;
+    return
+end
+width = right - left + 1;
+height = bottom - top + 1;
+
 N = width * height; % number of elements, for future normalization
 
 % initialize both diparity and intensity fluctuations
@@ -27,8 +38,8 @@ intensFluct = 0;
 x = window.x;
 y = window.y;
 % compute disparity and intensity fluctuations over pixels in window
-for i = window.edges(4):window.edges(2)
-    for j = window.edges(1):window.edges(3)
+for i = left:right
+    for j = top:bottom
 
         % estimate for corresponding x in second view
 	% x' = x - disparity
@@ -70,8 +81,8 @@ p=0;
 window.normalizerMap = zeros(height,width);
 
 % computing uncertainty; for each pixel in window...
-for i = window.edges(4):window.edges(2)
-    for j = window.edges(1):window.edges(3)
+for i = left:right
+    for j = top:bottom
 
 	% get x coord in second image estimated by current disparity
         shiftedX = i - stereoImg.DisparityMap(y,x);
@@ -88,8 +99,8 @@ for i = window.edges(4):window.edges(2)
             %uncert = uncert + num/denom; % create sum of phi2 over window
             
             % cache normalizer
-            window.normalizerMap(j - window.edges(1) +1, i - window.edges(4) + 1) = numSq/denomSq;
-	        uncert = uncert + window.normalizerMap(j - window.edges(1) + 1, i - window.edges(4) + 1);
+            window.normalizerMap(j - top +1, i - left + 1) = numSq/denomSq;
+	        uncert = uncert + window.normalizerMap(j - top + 1, i - left + 1);
         end
     end
 end
