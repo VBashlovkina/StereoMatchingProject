@@ -21,7 +21,7 @@ groundTruth = double(groundTruth)/3;
 % calculate max disparity for padding
 maxDisparity = max(groundTruth(:));
 
-% pad images
+% pad images with max disparity
 padView1 = padarray(view1, [0 maxDisparity], 'post');
 padView2 = padarray(view2, [0 maxDisparity], 'post');
 
@@ -35,8 +35,6 @@ mid = floor(N/2);
 
 shapes = zeros( N, N, 9);
 shapes(:, :, 1) = 1/(N^2);
-%shapes(:,:,1) = 0; % should this be here?
-%shapes(3:14, 3:14, 1) = 1/(12^2); %or this???
 % 4 vertically and horozontally divided kernels, normalized
 % left and right kernels
 shapes( :, 1:mid, 3) = ones(N, mid) / (N*mid); % magic kernel
@@ -52,7 +50,7 @@ shapes(:, :, 7) = tril(one) / numel(find(tril(one))) ;
 shapes(:, :, 8) = flipdim(triu(one), 2)/numel(find(flipdim(triu(one), 2)));
 shapes(:, :, 9) = flipdim(tril(one), 2)/numel(find(flipdim(tril(one), 2))); 
 
-%% V for odd kernels V
+%%  for odd kernels 
 % % 4 vertically and horozontally divided kernels, normalized
 % % left and right kernels
 % shapes( :, 1:mid, 2) = ones(N, mid) / (N*mid);
@@ -69,7 +67,9 @@ shapes(:, :, 9) = flipdim(tril(one), 2)/numel(find(flipdim(tril(one), 2)));
 % shapes(:, :, 9) = flipdim(tril(one), 3)/numel(find(flipdim(tril(one), 3))); 
 
 % choose best disparity and shape at each pixel
-Results = zeros(1, length(shapes));
+
+% create 4d results array
+% Results = zeros(1, length(shapes));
 result = zeros(370, 538, 75, 9);
 
 % for each of the 9 shapes
@@ -91,8 +91,10 @@ end
 
 end
 
+% extract shape choices
 [minShape, ShapeIndices] = min(result(:, 1:end-maxDisparity, :, :), [], 4);
 
+% extract best disparity choices 
 [minDisp, dispIndices] = min(minShape, [], 3);
 BestShapeIndices = ShapeIndices(dispIndices);
 
@@ -116,19 +118,20 @@ disparityDiff = bsxfun(@minus, groundTruth(nonZeroIndices), disparityPrediction(
 squaredDDif = disparityDiff.^2;
 meanSquared = mean(squaredDDif(:));
 RMS = sqrt(meanSquared);
+
 fullDispDiff = groundTruth - disparityPrediction;
 fullDispDiff(zeroIndices) = 0;
 figure, imshow(fullDispDiff), title('Disparity Error Produced with 9 Window Shapes');
 
 % 3d predicted error
-figure, surf(fullDispDiff, 'EdgeColor','none'), title('Depth Error Produced with 9 Window Shapes');
-axis ij;
-view(48,52);
+% figure, surf(fullDispDiff, 'EdgeColor','none'), title('Depth Error Produced with 9 Window Shapes');
+% axis ij;
+% view(48,52);
 % RMS = 8.7401 after blurrig, 9.3472 before
 
 
-error3D1 = imread('3Derror1shape.jpg');
-figure;
-subplot(1,2,1), imshow(error3D1);
-subplot(1,2,2), imshow(fullDispDiff);
-truesize;
+%error3D1 = imread('3Derror1shape.jpg');
+%figure;
+%subplot(1,2,1), imshow(error3D1);
+%subplot(1,2,2), imshow(fullDispDiff);
+%truesize;
