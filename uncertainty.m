@@ -1,35 +1,36 @@
 function [ uncert ] = uncertainty( stereoImg, x, y, window)
-%UNCERTAINTY estimates the uncertainty of the disparity estimate for a
-% given pixel  
-% shouldn't it calculate uncertainty over whole window?
+%UNCERTAINTY estimates the uncertainty of the disparity estimate for the
+% pair of images within STEREOIMAGE over a WINDOW centered at the X, Y.  
 
+% get dimensions of window
 width = window.width;
 height = window.height;
-N = width * height;
+N = width * height; % number of elements, for future normalization
 
+% initialize both diparity and intensity fluctuations
 dispFluct = 0;
 intensFluct = 0;
 
-% question:  do we need to pass x and y if we know where the window is?
 % compute disparity and intensity fluctuations over pixels in window
-%cache shifted!
 for i = x-window.XCenter + 1:x+window.XCenter -1
     for j = y-window.YCenter + 1:y+window.YCenter -1
 
-        % x from (2nd) view (?)
-        shiftedX = i - stereoImg.DisparityMap(y,x);
+        % estimate for corresponding x in second view
+	% x' = x - disparity
+        shiftedX = i - stereoImg.DisparityMap(y,x); % note y is row
         
-        if (shiftedX > 1) % if in the image
+        if (shiftedX > 1) % if this point is an index
             
-            % calculate intensity diff accross pair
-	% should there be a squared in here?
+            % sum over all pixels of intensity derivative of image 2 squared
             intensFluct = intensFluct + ...
-                stereoImg.DerivView2(j, shiftedX); 
+                stereoImg.DerivView2(j, shiftedX).^2; 
             
-            %disparity
+            % calculate difference in disparity
             dispDiff = (stereoImg.DisparityMap(j,i) - ...
                 stereoImg.DisparityMap(y,x))^2;
-            % if passing through the center (why only then?)
+	    dispDiff = dispDiff.^2;
+
+		% if we are not at center pixel, calculate distance
             if ~(i == x && j == y)
                 distanceFromCenter = sqrt((i-x)^2 + (j-y)^2);
                 dispFluct = dispFluct + dispDiff/distanceFromCenter;
@@ -49,25 +50,31 @@ uncert = 0;
 % padding for flat disparity
 p = .0001;
 p=0;
-% computing uncertainty
+% computing uncertainty; for each pixel in window...
 for i = x-window.XCenter + 1:x+window.XCenter -1
     for j = y-window.YCenter + 1:y+window.YCenter -1
+
+	% get x coord in second image estimated by current disparity
         shiftedX = i - stereoImg.DisparityMap(y,x);
         
-        if (shiftedX > 1)
+        if (shiftedX > 1) % if a valid index
             % window coordinates
             xi = i - x;
             eta = j - y;
-            % computing numerator and denominator of phi2
+            % computing numerator and denominator of phi2:
+	    % intensity derivs of view 2 / normalizer
             num = stereoImg.DerivView2(j, i - stereoImg.DisparityMap(y,x));
-            denom = noiseSigma + (p+dispFluct)*(p+intensFluct)*sqrt(xi^2 + eta^2);
-            uncert = uncert + denom/num^2;
+            %denom = noiseSignma + (p+dispFluct)*(p+intensFluct)*sqrt(xi^2 + eta^2);
+	    denom = sqrt(noiseSigma + (p+dispFluct)*(p+intensFluct)*sqrt(xi^2 + eta^2));
+            uncert = uncert + num/denom; % create sum of phi2 over window
+	    %uncert = uncert + denom/num^2;
         end
     end
 end
 
-% for stubbing
-%uncert = Inf;
 
+% square our sum and find inverse (eqn 21)
+uncert = 1/(uncert^2);
+return
 end
 

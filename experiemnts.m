@@ -14,7 +14,7 @@ width = size(view1,2);
 stereoImg = StereoImage(view1, view2);
 % cols of 1,2,3 ...
 grid = meshgrid(1:width, 1:height);
-% based on curr versions of disparity, has to be updatet whenever disp are
+% based on curr versions of disparity, has to be updated whenever disp map is
 shiftedXIndices = grid - stereoImg.DisparityMap;
 
 
@@ -24,7 +24,7 @@ x = 392;
 y = 202;
 uncert = uncertainty(stereoImg, x, y, window);
 
-colRigth = Window.expand(window, 2);
+colRight = Window.expand(window, 2);
 window = Window;
 rowAbove = Window.expand(window, 1);
 window = Window;
@@ -35,6 +35,7 @@ colLeft = Window.expand(window, 4);
 wins = [colRigth, rowBelow, rowAbove, colRigth];
 for i = 1:4
     %uncerts(i) = uncertainty(stereoImg, x, y, wins(i));
+    % i dont understand why this doesnt expand the window 8 times total
     uncerts(i) = uncertainty(stereoImg, x, y, Window.expand(window,i));
 end
 uncerts
@@ -45,7 +46,7 @@ w = 70;
 h = 50;
 linGrad = meshgrid(1:w, 1:h); % linear gradient
 gradient1 = imnoise(linGrad/(size(linGrad,2)),'gaussian'); % add noise
-% make up ground truth disparity
+% make up ground truth disparity 
 dispBox = 3*ones(h, w); % most things displaced by 3
 dispBox(15:h-15,20:w-20) = 7; % central piece is displaced by 7
 
@@ -93,6 +94,7 @@ for k = 1:length(xCoords)
 end
 
 window = Window;
+<<<<<<< HEAD
 x = 34; y = 13; % top edge
 topUncert = uncertainty(testStImg, x, y, window);
 for i = 1:4
@@ -121,3 +123,9 @@ end
 bottomUncert
 bottomEdgeUncerts
 %% conclusion: it kinda works!
+=======
+uncert = uncertainty(testStImg, x, y, window);
+uncertLeft = uncertainty(testStImg, x, y, Window.expand(window, 4)); % big
+uncertRight = uncertainty(testStImg, x, y, Window.expand(window, 2)); % same
+%% conclusion: it kinda works!
+>>>>>>> 67b4063678f31a035435ab69ae06b0e532be2342
