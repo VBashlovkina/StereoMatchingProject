@@ -5,6 +5,12 @@ classdef NewWindow
         x
         y
         edges % array of edge coordinates
+               % edges(1) = y coordinate of the top row
+               % edges(2) = x coordinate of the right column
+               % edges(3) = y coordinate of the bottom row
+               % edges(4) = x coordiante of the left column
+       normalizerMap % noiseSigma + intensFluct*dispFluct*distance)
+       phi2sum
     end
     
     methods
