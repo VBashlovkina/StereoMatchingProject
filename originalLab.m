@@ -1,3 +1,10 @@
+%% Code from original lab on StereoDisparity
+% Authors:
+% Renn Jervis 
+% Vasilisa Bashlovkina
+%
+% CSC 262 Final Project
+
 % load two images
 view1 = im2double(imread('/home/weinman/courses/CSC262/images/view1.png')); 
 view2 = im2double(imread('/home/weinman/courses/CSC262/images/view5.png'));
@@ -25,14 +32,7 @@ padView2 = padarray(view2, [0 maxDisparity], 'post');
 nonZeroIndices = find(groundTruth);
 zeroIndices = find(groundTruth <= 0);
 
-
-
 % choose best disparity and shape at each pixel
-Results = zeros(1, length(shapes));
-result = zeros(370, 538, 75, 9);
-
-% for each of the 9 shapes
-for j = 1:size(shapes, 3)
         
 % check every disparity up to max
 for i=maxDisparity:-1:1
@@ -43,55 +43,28 @@ for i=maxDisparity:-1:1
     squaredDiffs = (padView1-shiftedView2).^2;
 
     % convolution to get patch SSDs, vary patch size
-    kernel = shapes(:,:,j);
+    kernel = ones(1, 7);
     % place in appropriate 'slice' of result array
-    result(:,:,i, j) = conv2(squaredDiffs, kernel, 'same');     
+    result(:,:, i) = conv2(squaredDiffs, kernel, 'same');     
 end
 
 %  % compute the min along 3rd dim
-% [mins, minIndices] = min(result(:, 1:end-maxDisparity, :), [], 3);
-% 
-% % calculate RMS error between prediction and real disparity
-% disparityDiff = bsxfun(@minus, groundTruth(nonZeroIndices), minIndices(nonZeroIndices));
-% 
-% % rms2 = rms(disparityDiff2); % function rms yields same value
+[mins, minIndices] = min(result(:, 1:end-maxDisparity, :), [], 3);
+
+% % set predicted disparity to zero in appropriate places
+disparityPrediction = minIndices;
+disparityPrediction(zeroIndices) = 0;
+
+% calculate RMS error between prediction and real disparity
+disparityDiff = bsxfun(@minus, groundTruth(nonZeroIndices), disparityPrediction(nonZeroIndices));
 % squaredDDif = disparityDiff.^2;
 % meanSquared = mean(squaredDDif(:));
 % RMS = sqrt(meanSquared);
-% 
-% % store RMS in result array
-% Results(j) = RMS;
-end 
-
-[minShape, ShapeIndices] = min(result(:, 1:end-maxDisparity, :, :), [], 4);
-
-[minDisp, dispIndices] = min(minShape, [], 3);
-BestShapeIndices = ShapeIndices(dispIndices);
-
-
-
-% calculate RMS error between prediction and real disparity
-disparityDiff = bsxfun(@minus, groundTruth(nonZeroIndices), dispIndices(nonZeroIndices));
-
-% rms2 = rms(disparityDiff2); % function rms yields same value
-squaredDDif = disparityDiff.^2;
-meanSquared = mean(squaredDDif(:));
-RMS = sqrt(meanSquared);
-
-
-
-
-
-% % set predicted disparity to zero in appropriate places
-disparityPrediction = dispIndices;
-disparityPrediction(zeroIndices) = 0;
-
-figure, imshow(BestShapeIndices, []), colorbar;
-
+figure;
+openfig('RMS_vs_WinSize.fig');
 figure, imshow(disparityPrediction, []), colormap(jet), colorbar;
-% display 2d versions
-%figure, imshow(disparityPrediction2, []), title('Predicted Disparity 2d');
-%colormap jet;
+title('Original Disparity Map Produced');
+
 % 
 % 
 % % noise reduction 1: gaussian convolution
@@ -107,70 +80,59 @@ figure, imshow(disparityPrediction, []), colormap(jet), colorbar;
 % squaredDDif = disparityDiff.^2;
 % meanSquared = mean(squaredDDif(:));
 % RMS = sqrt(meanSquared);
+
+%% Varying Parameters
+% In an attempt to minimize our root mean square error, we will examine the
+% effects of calculating the sum of squared differences with varying patch
+% sizes. We plot the resulting relationship between the root mean square
+% and the window size below.
+
+% windowSizes = [1:2:51];
+% windowResults = zeros(1, length(windowSizes));
+% for j = 1:length(windowSizes)
+%         
+% % count down from largest disparity to 1
+% for i=maxDisparity:-1:1
+%     % shifting by current disparity
+%     shiftedView2 = imtranslate(padView2, 0, -i, 0);
+%     
+%     % computing squared differences
+%     squaredDiffs = (padView1-shiftedView2).^2;
 % 
+%     % convolution to get patch SSDs, vary patch size
+%     kernel = ones(1,windowSizes(j));
+%     % place in appropriate 'slice' of result array
+%     result(:,:,i) = conv2(kernel, kernel', squaredDiffs, 'same');     
+% end
 % 
-% % Our second noise reduction technique is to blur with a median filter. In
-% % this case, our RMS is 9.90. We see that this is not as effective as the
-% % Gaussian filter, thus we choose to enhance our first noise reduction
-% % approach.
+%  % compute the min along 3rd dim
+% [mins, minIndices] = min(result(:, 1:end-maxDisparity, :), [], 3);
+%
+% % calculate RMS error between prediction and real disparity
+% disparityDiff = bsxfun(@minus, groundTruth(nonZeroIndices), minIndices(nonZeroIndices));
 % 
-% % noise reduction 2, median
-% disparityPrediction3 = disparityPrediction;
-% reducedNoise2 = medfilt2(disparityPrediction3);
-% 
-% figure, imshow(reducedNoise2, []), title('Reduced Noise Disparity- Median Filter');
-% colormap jet;
-% 
-% disparityDiff = bsxfun(@minus, groundTruth(nonZeroIndices), reducedNoise2(nonZeroIndices));
+% % rms2 = rms(disparityDiff2); % function rms yields same value
 % squaredDDif = disparityDiff.^2;
 % meanSquared = mean(squaredDDif(:));
 % RMS = sqrt(meanSquared);
 % 
-% %%
-% % To determine the best approach for blurring with a Gaussian, we now
-% % attempt to determine the relationship between the size of our Gaussian
-% % filter and the RMS error between the disparities. We vary the kernel size
-% % from 1 to 51, considering only odd kernels, and plot the resulting
-% % relationship below.
-% 
-% % vary parameters of reduction 1
-% kernelSize = [1:2:51];
-% RMSvsKernel = zeros(1, length(kernelSize));
-% % for k=1:length(kernelSize)
-% %    
-% %     gauss = gkern(kernelSize(k));
-% %     reducedNoise1 = conv2(gauss, gauss', disparityPrediction, 'same');
-% %     reducedNoise1(zeroIndices) = 0;
-% %     
-% %     disparityDiff = bsxfun(@minus, groundTruth(nonZeroIndices), reducedNoise1(nonZeroIndices));
-% %     squaredDDif = disparityDiff.^2;
-% %     meanSquared = mean(squaredDDif(:));
-% %     RMS = sqrt(meanSquared);
-% %     
-% %     RMSvsKernel(k) = RMS;
-% %     
-% %     % save best image
-% %     if(kernelSize(k) == 11)
-% %         bestDisparity = reducedNoise1;
-% %     end
-% %     
-% % end
-% %     
-% % figure, plot(kernelSize, RMSvsKernel), title('RMS vs Kernel Size');
-% % xlabel('Blurring Kernel Size'), ylabel('RMS');
-% 
-% openfig('RMS_vs_KernelSize.fig');
-% 
-% %%
-% % We see that in this graph we have a local minimum at 11. Using this as
-% % the kernel size for the Gaussian filter, we display the best version of
-% % our disparity image below.
-% 
-% figure,imshow(bestDisparity, []), colormap jet;
-% title('Best Reduced Noise Disparity Prediction');
-% 
-% % 3d predicted disparity
-% % figure, surf(bestDisparity, 'EdgeColor','none'), title('Predicted Disparity');
-% % axis ij;
+% % store RMS in result array
+% windowResults(j) = RMS;
+% end 
 
-RMS
+% note: we manually saved figure
+% figure, plot( windowSizes, windowResults),title('RMS vs SSD Window Sizes');
+%  xlabel('Window Size'), ylabel('RMS');
+
+% doesnt need new figure
+%openfig('RMS_vs_WinSize.fig');
+
+%% Acknowledgements
+%
+% The stereo and disparity images are courtesy of the 2005 Middlebury
+% stereo dataset (Art image). The corresponding paper is:
+% Christopher J. Pal, Jerod J. Weinman, Lam C. Tran and Daniel Scharstein. 
+% (2012). On Learning Conditional Random Fields for Stereo: Exploring Model
+% Structures and Approximate Inference. International Journal of Computer 
+% Vision, 99(3), 319-337. 
+
