@@ -30,8 +30,8 @@ originalDisparity = stereoImg.DisparityMap;
 % Instead, we vary over each pixel
 for x = 1:width
     for y = 1:height
-        newD = Inf;
-        while newD ~= newD % until disparity estimate converges
+        newD = 0;
+        while newD ~= oldD % until disparity estimate converges
             
             % start with normalized window of size 3x3
             window = NewWindow(x, y);
@@ -65,7 +65,8 @@ for x = 1:width
                  
                 
                 % compute the disparity increment
-                newD = stereoImg.DisparityMap(y,x) + incrementDisp(stereoImag, x, y, window);
+                oldD = newD;
+                newD = stereoImg.DisparityMap(y,x) + incrementDisp(stereoImag, window);
 
                 %if ~gotBetter
                  %   break %from current while loop and move on to diff x,y

@@ -138,12 +138,7 @@ RMS = sqrt(meanSquared);
 % 
 %  % compute the min along 3rd dim
 % [mins, minIndices] = min(result(:, 1:end-maxDisparity, :), [], 3);
-% 
-% % extract our best disparity prediction (used later)
-% if(windowSizes(j) == 7)
-%     disparityPrediction = minIndices;
-% end
-% 
+%
 % % calculate RMS error between prediction and real disparity
 % disparityDiff = bsxfun(@minus, groundTruth(nonZeroIndices), minIndices(nonZeroIndices));
 % 
