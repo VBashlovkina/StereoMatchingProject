@@ -26,13 +26,14 @@ height = window.height;
 N = width * height; % number of elements, for future normalization
 
 incr = 0;
-% initialize both diparity and intensity fluctuations
+% initialize variables
+
 dispFluct = 0;
 intensFluct = 0;
-genNum = 0;
-genDenom = 0;
 phi1 = 0;
 phi2 = 0;
+genNum = 0;
+genDenom = 0;
 p=0;
 % consider refactoring phi 1 and 2 into functions?
 % first calculate disparity and intensity fluctuation

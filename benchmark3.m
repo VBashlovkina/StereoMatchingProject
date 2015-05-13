@@ -1,6 +1,6 @@
 %% Banchmark 3
-% Create general shell for our future implementation of the math in Kanade
-% and Okutomi
+% This script began as a shell for implementing the mechanics of our
+% algorithm. Now the (previously) stubbed functions are functional
 
 % import some classes
 import StereoImage;
@@ -31,59 +31,46 @@ originalDisparity = stereoImg.DisparityMap;
 for x = 1:width
     for y = 1:height
         newD = Inf;
-        while newD ~= d(y,x) % until disparity estimate converges
+        while newD ~= groundTruth(y,x) % until disparity estimate converges
             
             % start with normalized window of size 3x3
             window = Window;
             % compute uncertainty
-            %STUB:curUncert = uncertainty(view1, view2, d, x, y, window);
-            curUncert = 0;
+            curUncert = uncertainty(stereoImg, x, y, window);
+            %curUncert = 0;
             % initialize boolean flags for (im)possible expansion
             flags = [1 1 1 1];
             while length(window.Matrix(:)) < 257 % until window reaches max size
                 gotBetter = 0; % assume certainty did not get better
                 for k = 1:length(flags)
-                    %fprintf('pixel %d %d, direction %d\n', x,y,k);
+                    
                     if flags(k)
                         newWindow = Window.expandWindow(window, k);
                      
-			% I think that we want to check all directions, 
-			% and choose min uncertainty of these
-			% possible code:
-			%
-			% newUncert=uncertainty(stereoImg, x, y, newWindow);
-			%
-			%
-			% if newUncert < curUncert
-                        %    uncerts(k) = newUncert
-			% else
-			% 	flags(k) = 0; //prohibit direction
-			% % stop looping through each direction, choose best
-			% direction = find(max(uncerts));
-			% set new window
-			% window = Window.expandWindow(window, direction);
-			% currentUncert = uncerts(k)
-			% gotBetter = 1
+                         newUncert=uncertainty(stereoImg, x, y, newWindow);
 			
-			newUncert = uncertainty(stereoImg, x, y, newWindow);
-                        if newUncert < curUncert
-                            window = newWindow;
-                            curUncert = newUncert;
-                            gotBetter = 1;
-                        else
-                            flags(k) = 0;
-                        end % evaluating the new uncertainty value
-                    end % if this expansion is allowed
-                end % for each expansion
+                     if newUncert < curUncert
+                           uncerts(k) = newUncert
+                     else
+                    	flags(k) = 0; % prohibit direction
+                     end
+                    end % if direction not prohibited
+                end % check all directions
+                
+                % stop looping through each direction, choose best
+                 direction = find(min(uncerts));
+                % set new window
+                 window = Window.expandWindow(window, direction);
+                 currentUncert = uncerts(direction)
+                 
                 
                 % compute the disparity increment
-                newD = d(y,x) + incrementDisp(stereoImag, x, y, window);
+                newD = stereoImg.DisparityMap(y,x) + incrementDisp(stereoImag, x, y, window);
 
-                if ~gotBetter
-                    break %from current while loop and move on to diff x,y
-                end % if the window converged
-                
-            end % while we can keep expanding the window
+                %if ~gotBetter
+                 %   break %from current while loop and move on to diff x,y
+            end % until window reaches max size 
+            
          end % while the disparity estimate hasn't converged
     end % for each y
 end % for each x

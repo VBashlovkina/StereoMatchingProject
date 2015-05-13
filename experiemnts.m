@@ -49,7 +49,7 @@ linGrad = meshgrid(1:w, 1:h); % linear gradient
 gradient1 = imnoise(linGrad/(size(linGrad,2)),'gaussian'); % add noise
 % make up ground truth disparity 
 dispBox = 3*ones(h, w); % most things displaced by 3
-dispBox(15:h-15,20:w-20) = 7; % central piece is displaced by 7
+dispBox(15:h-15,20:w-20) = 8; % central piece is displaced by 7
 
 
 
@@ -98,7 +98,7 @@ for k = 1:length(xCoords)
 end
 
 window = Window;
-% <<<<<<< HEAD
+
 x = 34; y = 13; % top edge
 topUncert = uncertainty(testStImg, x, y, window);
 for i = 1:4
@@ -126,10 +126,37 @@ end
 'right edge'
 bottomUncert
 bottomEdgeUncerts
+<<<<<<< HEAD
 %% conclusion: it kinda works!
 %=======
 uncert = uncertainty(testStImg, x, y, window);
 uncertLeft = uncertainty(testStImg, x, y, Window.expand(window, 4)); % big
 uncertRight = uncertainty(testStImg, x, y, Window.expand(window, 2)); % same
 %% conclusion: it kinda works!
-%>>>>>>> 67b4063678f31a035435ab69ae06b0e532be2342
+
+
+%% conclusion: it kinda works!x = 34; y = 13; % top edge
+topUncert = uncertainty(testStImg, window);
+for i = 1:4
+    newWindow = window;
+    NewWindow.expand(newWindow,i);
+    topEdgeUncerts(i) = uncertainty(testStImg, newWindow);
+end
+'top edge'
+topUncert
+topEdgeUncerts
+
+uncert = uncertainty(testStImg, x, y, window);
+uncertLeft = uncertainty(testStImg, x, y, Window.expand(window, 4)); % big
+uncertRight = uncertainty(testStImg, x, y, Window.expand(window, 2)); % same
+
+window = NewWindow(21,34);
+topUncert = uncertainty(testStImg, window);
+for i = 1:4
+    newWindow = NewWindow.expand(window,i);
+    topEdgeUncerts(i) = uncertainty(testStImg, newWindow);
+end
+'top edge'
+topUncert
+topEdgeUncerts
+
