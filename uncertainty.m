@@ -39,8 +39,8 @@ for i = x-window.XCenter + 1:x+window.XCenter -1
 end
 
 % scale for number of elements
-dispFluct = dispFluct/N
-intensFluct = intensFluct/N
+dispFluct = dispFluct/N;
+intensFluct = intensFluct/N;
 
 % What is noise power?
 noiseSigma = .5;
