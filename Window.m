@@ -1,5 +1,5 @@
 classdef Window
-    %WINDOW encapsulates information about convolution windows
+    % WINDOW encapsulates information about convolution windows
     % Authors:
     % Renn Jervis 
     % Vasilisa Bashlovkina
@@ -12,7 +12,7 @@ classdef Window
         % center coordinates
         XCenter
         YCenter
-        width
+        width %dimensions
         height
     end
     

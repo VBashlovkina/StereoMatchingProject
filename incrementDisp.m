@@ -1,4 +1,4 @@
-function [ incr ] = incrementDisp( stereoImg, x, y, window )
+function [ incr ] = incrementDisp( stereoImg, window )
 % INCREMENTDISP produces INCR, a value by which the current measure of
 % disparity at given pixel (D(Y,X)) should be incremented. STEREOIMAGE is a
 % member of our StereoImage class which contains 2 stereo view, a disparity
@@ -21,8 +21,10 @@ function [ incr ] = incrementDisp( stereoImg, x, y, window )
 % numerator: sum over window (phi1(x, y) * phi2(x, y))
 % denominator: sum over all pixels phi2^2 -> use in uncertainty as well
 
-width = window.width;
-height = window.height;
+%width = window.width;
+%height = window.height;
+width = window.edges(2) - window.edges(4) + 1;
+height = window.edges(3) - window.edges(1) + 1;
 N = width * height; % number of elements, for future normalization
 
 incr = 0;
@@ -85,7 +87,7 @@ for i = x-window.XCenter + 1:x+window.XCenter -1
             
             % calc phi1  
             dervIntensity = stereoImg.DerivView2(j, i - shiftedX);
-            phi2 = phi2 + dervIntensity/denom;
+            phi2 = phi2 + (dervIntensity/denom)^2;
             
             genNum = genNum+ (phi1 * phi2);
             genDenom = genDenom + phi2;
@@ -94,8 +96,6 @@ for i = x-window.XCenter + 1:x+window.XCenter -1
     end
 end
     
-genDenom = genDenom^2;
-
 incr = genNum / genDenom;
 return
 end

@@ -31,10 +31,10 @@ originalDisparity = stereoImg.DisparityMap;
 for x = 1:width
     for y = 1:height
         newD = Inf;
-        while newD ~= groundTruth(y,x) % until disparity estimate converges
+        while newD ~= newD % until disparity estimate converges
             
             % start with normalized window of size 3x3
-            window = Window;
+            window = NewWindow(x, y);
             % compute uncertainty
             curUncert = uncertainty(stereoImg, x, y, window);
             %curUncert = 0;
@@ -45,9 +45,9 @@ for x = 1:width
                 for k = 1:length(flags)
                     
                     if flags(k)
-                        newWindow = Window.expandWindow(window, k);
+                        newWindow = NewWindow.expandWindow(window, k);
                      
-                         newUncert=uncertainty(stereoImg, x, y, newWindow);
+                         newUncert=uncertainty(stereoImg, newWindow);
 			
                      if newUncert < curUncert
                            uncerts(k) = newUncert
@@ -60,8 +60,8 @@ for x = 1:width
                 % stop looping through each direction, choose best
                  direction = find(min(uncerts));
                 % set new window
-                 window = Window.expandWindow(window, direction);
-                 currentUncert = uncerts(direction)
+                 window = NewWindow.expandWindow(window, direction);
+                 currentUncert = uncerts(direction);
                  
                 
                 % compute the disparity increment
@@ -75,9 +75,3 @@ for x = 1:width
     end % for each y
 end % for each x
 
-str = 'good';
-if originalDisparity == d
-    str
-else
-    size(d);
-end
