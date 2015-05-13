@@ -47,11 +47,11 @@ for i = window.edges(4):window.edges(2)
 end
 
 % scale for number of elements
-dispFluct = dispFluct/N
+dispFluct = dispFluct/N;
 intensFluct = intensFluct/N; % right!
 
 % What is noise power?
-noiseSigma = .5;
+noiseSigma = .0001;
 
 uncert = 0;
 % padding for flat disparity
