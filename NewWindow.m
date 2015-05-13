@@ -10,7 +10,7 @@ classdef NewWindow
                % edges(3) = y coordinate of the bottom row
                % edges(4) = x coordiante of the left column
        normalizerMap % noiseSigma + intensFluct*dispFluct*distance)
-       phi2sum
+       phi2sum % phi2 over the window 
     end
     
     methods

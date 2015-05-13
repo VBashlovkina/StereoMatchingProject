@@ -14,6 +14,7 @@ function [ dispIndices ] = initialDisparity( view1, view2 )
 %
 % CSC 262 Final Project
 
+%maxDisparity = size(view1, 2);
 maxDisparity = 75;
 % pad images with max disparity
 padView1 = padarray(view1, [0 maxDisparity], 'post');

@@ -95,7 +95,7 @@ for i = window.edges(4):window.edges(2)
 end
 
 
-% square our sum and find inverse (eqn 21)
+% find inverse (eqn 21)
 uncert = 1/uncert;
 return
 end
