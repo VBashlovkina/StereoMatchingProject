@@ -1,9 +1,12 @@
 function [ dispIndices ] = initialDisparity( view1, view2 )
 % INITIALDISPARITY compute initial estimates for disparity between two 
-%   stereo images.
+%   stereo images. DISPINDICES is the estimate of the disparity map between
+%   two stereo images VIEW1 and VIEW2.
+% 
 %   This function solves the correspondence problem and computes the
-%   disparity for each pixel in an image by varying over possible disparities
-%   and 9 window shapes and choosing the combination that minimizes SSD.
+%   disparity for each pixel in an image by varying over all possible
+%   disparities and 9 window shapes and choosing the combination that
+%   minimizes SSD over a 16 X 16 patch.
 
 % to generalize, extract the max disparity from the ground truth data?
 maxDisparity = 75;
@@ -17,10 +20,11 @@ width = size(padView1,2);
 N=16;
 mid = floor(N/2);
 
-% initialize 9 different shapes
+% initialize 9 different shapes, normalize
 shapes = zeros( N, N, 9);
+
 shapes(:, :, 1) = 1/(N^2);
-% 4 vertically and horozontally divided kernels, normalized
+% 4 vertically and horozontally divided kernels
 % left and right kernels
 shapes( :, 1:mid, 3) = ones(N, mid) / (N*mid); % magic kernel
 shapes( :, mid+1:end, 2) = ones( N, mid)/ (N*(mid));
@@ -54,13 +58,13 @@ for j = 1:size(shapes, 3)
     end
 end
 
-str = 'almost computed disparity';
-str 
+
 [minShape, ShapeIndices] = min(result(:, 1:end-maxDisparity, :, :), [], 4);
 % which disparities minimized SSD
 [minDisp, dispIndices] = min(minShape, [], 3);
 % which shapes got used for each pixel
 BestShapeIndices = ShapeIndices(dispIndices);
+return
 
 end
 

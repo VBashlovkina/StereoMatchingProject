@@ -17,10 +17,10 @@
 % Related notes on Uncertainty.m
 % We want this to calculate uncertainty over entire window, yes?
 % So can we include the specific pixel coordinates when we create a 
-% window and simplify the loops here? (See comment in function)
+% window and simplify the loops here? 
 % 
 % Why do we only calculate disparity fluctuation if we are passing through
-% the center.
+% the center?
 %
 % What is padding for flat disparity?
 %
