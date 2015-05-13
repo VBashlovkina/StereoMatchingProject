@@ -1,6 +1,11 @@
-%% Banchmark 3
+%% Benchmark 3
 % This script began as a shell for implementing the mechanics of our
 % algorithm. Now the (previously) stubbed functions are functional
+% Authors:
+% Renn Jervis 
+% Vasilisa Bashlovkina
+%
+% CSC 262 Final Project
 
 % import some classes
 import StereoImage;
@@ -28,24 +33,27 @@ originalDisparity = stereoImg.DisparityMap;
 
 % We don't have to vary over all disparities -- we already have estimates!
 % Instead, we vary over each pixel
-for x = 1:width
-    for y = 1:height
+for x = 2:width-1
+    for y = 2:height-1
         newD = 0;
+        oldD = 1;
         while newD ~= oldD % until disparity estimate converges
-            
-            % start with normalized window of size 3x3
+            oldD = 0;
+            % start with normalized window of size 3x3 centered at x, y
             window = NewWindow(x, y);
             % compute uncertainty
-            curUncert = uncertainty(stereoImg, x, y, window);
-            %curUncert = 0;
-            % initialize boolean flags for (im)possible expansion
+            curUncert = uncertainty(stereoImg, window);
+            
+            % initialize boolean flags for possible expansion
             flags = [1 1 1 1];
-            while length(window.Matrix(:)) < 257 % until window reaches max size
-                gotBetter = 0; % assume certainty did not get better
+            winSize = (window.edges(3) - window.edges(1)) ...
+                *(window.edges(4) - window.edges(2)); 
+            while  winSize < 257 % until window reaches max size
+                gotBetter = 0; % assume uncertainty did not get better
                 for k = 1:length(flags)
                     
                     if flags(k)
-                        newWindow = NewWindow.expandWindow(window, k);
+                        newWindow = NewWindow.expand(window, k);
                      
                          newUncert=uncertainty(stereoImg, newWindow);
 			
@@ -60,19 +68,24 @@ for x = 1:width
                 % stop looping through each direction, choose best
                  direction = find(min(uncerts));
                 % set new window
-                 window = NewWindow.expandWindow(window, direction);
+                 window = NewWindow.expand(window, direction);
                  currentUncert = uncerts(direction);
                  
                 
                 % compute the disparity increment
                 oldD = newD;
                 newD = stereoImg.DisparityMap(y,x) + incrementDisp(stereoImag, window);
-
-                %if ~gotBetter
-                 %   break %from current while loop and move on to diff x,y
+                stereoImg.DisparityMap(y,x) = newD;
+                
+                winSize = (window.edges(3) - window.edges(1)) ...
+                *(window.edges(4) - window.edges(2)); 
+                
             end % until window reaches max size 
             
          end % while the disparity estimate hasn't converged
+     
     end % for each y
 end % for each x
+
+
 

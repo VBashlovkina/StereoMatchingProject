@@ -4,15 +4,14 @@ adaptive window shape.
 
 Index of files:
 
-+ benchmark1.m - initial work on varying over 9 window shapes, and
-		the best size for these windows.  
++ benchmark1.m - initial work on varying over 9 window shapes  
 		
 + benchmark3.m - primary implementation of our algorithm. This uses functions:
-	- uncertainty.m function to calculate the uncertainty estimate over 
+	- uncertainty.m: a function to calculate the uncertainty estimate over 
 		the given window.
 	- incrementDisp.m: a function to calculates the disparity increment
 		after we have expanded a window.
-	- initialDisparity - a refactoring of benchmark 1's results
+	- initialDisparity.m: a refactoring of benchmark 1's results
 				into a function which produces an initial
 				estimate of the disparity map
 

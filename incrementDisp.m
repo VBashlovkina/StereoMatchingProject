@@ -39,6 +39,7 @@ for i = window.edges(4):window.edges(2)
             % calculate phi1
             intensityDiff = stereoImg.View1(j, i) - stereoImg.View2(j, shiftedX);
             
+            % calculate numerator of phi1*phi2
             phi1phi2num = intensityDiff*stereoImg.DerivView2(j, shiftedX);
             
             genNum = genNum + phi1phi2num/...

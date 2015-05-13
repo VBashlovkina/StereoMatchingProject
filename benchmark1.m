@@ -1,6 +1,12 @@
 %% Benchmark 1
 % Follow instructions in "Project Starter Idea" section of stereo 
-% disparity lab to see how window shapes effect disparity prediction
+% disparity lab to see how window shapes effect disparity prediction.
+% We create 9 different shapes and vary over all pos
+% Authors:
+% Renn Jervis 
+% Vasilisa Bashlovkina
+%
+% CSC 262 Final Project
 
 % load two stereo images
 view1 = im2double(imread('/home/weinman/courses/CSC262/images/view1.png')); 
@@ -125,7 +131,6 @@ fullDispDiff(zeroIndices) = 0;
 figure, surf(fullDispDiff, 'EdgeColor','none'), title('Depth Error Produced with 9 Window Shapes');
 axis ij;
 view(48,52);
-% RMS = 8.7401 after blurrig, 9.3472 before
 
 %error3D1 = imread('3Derror1shape.jpg');
 %figure;

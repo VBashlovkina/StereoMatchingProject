@@ -106,7 +106,7 @@ for i = left:right
 end
 
 
-% square our sum and find inverse (eqn 21)
+% find inverse (eqn 21)
 uncert = 1/uncert;
 return
 end
