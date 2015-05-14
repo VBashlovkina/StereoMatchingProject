@@ -17,7 +17,7 @@ classdef StereoImage
             % initial disparity calculation using the algorithm developped
             % in lab
             obj.DisparityMap = initialDisparity(view1, view2);
-            % computing the deriv map FIXME, ONLY NEED X DIRECTION
+            % computing the deriv map 
             derivGauss = gkern(2,1); % gaussian derivative kernel
             gauss = gkern(2); % gaussian kernel
             % yderivMap = conv2(derivGauss, gauss', view2, 'same');

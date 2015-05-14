@@ -80,7 +80,7 @@ p = .0001;
 p=0;
 
 
-window.normalizerMap = zeros(height,width);
+window.normalizerMap = ones(height,width);
 
 % computing uncertainty; for each pixel in window...
 for i = left:right
@@ -99,7 +99,6 @@ for i = left:right
             denomSq = noiseSigma + (p+dispFluct)*(p+intensFluct)*sqrt(xi^2 + eta^2);
 	        %denom = sqrt(noiseSigma + (p+dispFluct)*(p+intensFluct)*sqrt(xi^2 + eta^2));
             %uncert = uncert + num/denom; % create sum of phi2 over window
-            
             % cache normalizer
             window.normalizerMap(j - top +1, i - left + 1) = numSq/denomSq;
 	        uncert = uncert + window.normalizerMap(j - top + 1, i - left + 1);

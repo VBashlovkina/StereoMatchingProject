@@ -43,9 +43,9 @@ for i = window.edges(4):window.edges(2)
             % calculate numerator of phi1*phi2
             phi1phi2num = intensityDiff*stereoImg.DerivView2(j, shiftedX);
             
+       
             % calculate numerator of increment
-            genNum = genNum + phi1phi2num/...
-                window.normalizerMap(j - window.edges(1) +1, i - window.edges(4) + 1);
+            genNum = genNum + phi1phi2num/ window.normalizerMap(j - window.edges(1) +1, i - window.edges(4) + 1);
             
             %denom = sqrt(noiseSigma + (p+dispFluct)*(p+intensFluct)*sqrt(xi^2 +eta^2));
             %phi1 = phi1 + intensityDiff/denom;
@@ -61,6 +61,6 @@ for i = window.edges(4):window.edges(2)
     end
 end
     
-incr = genNum * uncert;
+incr = round(genNum * uncert)
 return
 end
